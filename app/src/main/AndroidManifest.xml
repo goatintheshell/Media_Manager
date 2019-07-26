@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hilarysturges.c868">
+    <!-- To access Google+ APIs: -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".AddTVShowScreen"></activity>
+        <activity android:name=".AddMovieScreen" />
+        <activity android:name=".AddMusicScreen" />
+        <activity android:name=".AddMediaScreen" />
+        <activity android:name=".DetailedTVShowScreen" />
+        <activity android:name=".DetailedMovieScreen" />
+        <activity android:name=".DetailedMusicScreen" />
+        <activity android:name=".TVShowsScreen" />
+        <activity android:name=".MoviesScreen" />
+        <activity android:name=".MusicScreen" />
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
