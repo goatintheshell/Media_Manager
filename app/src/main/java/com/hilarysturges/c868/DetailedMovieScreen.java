@@ -90,6 +90,7 @@ public class DetailedMovieScreen extends AppCompatActivity {
         deleteMovieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deleteActors(_id);
                 deleteMovie(_id, index);
                 Intent i = new Intent(getApplicationContext(), MoviesScreen.class);
                 startActivity(i);
@@ -154,6 +155,13 @@ public class DetailedMovieScreen extends AppCompatActivity {
             movie.setLength(length);
             movie.setRating(rating);
             movie.setDescription(description);
+    }
+
+    public void deleteActors(int _id) {
+        databaseMan.removeActors(_id);
+        MainActivity.actors.clear();
+        MainActivity.counterActors = 0;
+        MainActivity.initData();
     }
 
     public void deleteMovie(int _id, int index) {

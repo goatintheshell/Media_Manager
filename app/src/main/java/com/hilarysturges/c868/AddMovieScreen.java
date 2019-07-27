@@ -1,7 +1,6 @@
 package com.hilarysturges.c868;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,9 +11,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-
-import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AddMovieScreen extends AppCompatActivity {
@@ -78,6 +74,7 @@ public class AddMovieScreen extends AppCompatActivity {
         addMovieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                databaseMan.incrementSequence(titleEdit.getText().toString());
                 addMovie();
                 addActors();
                 Intent i = new Intent(getApplicationContext(), MoviesScreen.class);
@@ -95,7 +92,8 @@ public class AddMovieScreen extends AppCompatActivity {
         int type = getType();
         Bitmap cover = getCover(type);
         Movie movie = new Movie(title, director, type, description, cover, length, rating);
-        databaseMan.addMovie(movie, getNumActors());
+        int sequenceId = databaseMan.getLastSequence();
+        databaseMan.addMovie(movie, getNumActors(), sequenceId);
         Movie movie1 = databaseMan.getLastMovie();
         MainActivity.movies.add(movie1);
     }
@@ -128,7 +126,7 @@ public class AddMovieScreen extends AppCompatActivity {
     }
 
     public void addActors() {
-        int _id = MainActivity.movies.get(MainActivity.movies.size()-1).get_id();
+        int _id = MainActivity.movies.get(MainActivity.movies.size()-1).getSeqId();
         for (int i=0 ; i<29 ; i++) {
             if (addActors[i]!=null)
                 if (!addActors[i].getText().toString().isEmpty()) {

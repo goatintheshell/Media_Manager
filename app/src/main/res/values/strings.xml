@@ -62,4 +62,6 @@
     <string name="alphabetically">Alphabetically</string>
     <string name="artist">Artist</string>
     <string name="return_to_home">Return To Home</string>
+    <string name="track">Track</string>
+    <string name="season">Season</string>
 </resources>

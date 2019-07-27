@@ -90,6 +90,7 @@ public class AddTVShowScreen extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    databaseMan.incrementSequence(titleEdit.getText().toString());
                     addTVShow();
                     addActors();
                     addSeasons();
@@ -110,7 +111,8 @@ public class AddTVShowScreen extends AppCompatActivity {
         int type = getType();
         Bitmap cover = getCover(type);
         TVShow tvShow = new TVShow(title, director, type, description, cover);
-        databaseMan.addTVShow(tvShow, getNumActors(), getNumSeasons());
+        int sequenceId = databaseMan.getLastSequence();
+        databaseMan.addTVShow(tvShow, getNumActors(), getNumSeasons(), sequenceId);
         TVShow tvShow1 = databaseMan.getLastTVShow();
         MainActivity.tvShows.add(tvShow1);
     }
@@ -152,7 +154,7 @@ public class AddTVShowScreen extends AppCompatActivity {
     }
 
     public void addActors() {
-        int _id = MainActivity.tvShows.get(MainActivity.tvShows.size()-1).get_id();
+        int _id = MainActivity.tvShows.get(MainActivity.tvShows.size()-1).getSeqId();
         for (int i=0 ; i<29 ; i++) {
             if (addActors[i]!=null)
                 if (!addActors[i].getText().toString().isEmpty()) {

@@ -1,14 +1,24 @@
 package com.hilarysturges.c868;
 
+
 public class Actor {
     private int _id;
     private String name;
     private int media_id;
+    private int index;
 
     public Actor(int _id, String name, int media_id) {
         this._id = _id;
         this.name = name;
         this.media_id = media_id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex() {
+        this.index = MainActivity.actors.lastIndexOf(this);
     }
 
     public Actor(String name) {

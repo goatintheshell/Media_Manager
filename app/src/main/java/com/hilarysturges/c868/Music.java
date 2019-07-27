@@ -14,6 +14,7 @@ public class Music {
     private Bitmap cover;
     private int type;
     private String description;
+    private int index;
 
     public Music(String title, String artist, String producer, int length, Bitmap cover, int type, String description) {
         this.title = title;
@@ -34,6 +35,14 @@ public class Music {
         this.cover = cover;
         this.type = type;
         this.description = description;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex() {
+        this.index = MainActivity.music.lastIndexOf(this);
     }
 
     public int get_id() {

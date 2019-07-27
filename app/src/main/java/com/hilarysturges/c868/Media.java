@@ -11,6 +11,7 @@ public class Media {
     private ArrayList<Actor> actors;
     private String description;
     private Bitmap cover;
+    private int seqId;
 
     public Media(String title, String director, int type, String description, Bitmap cover) {
         this.title = title;
@@ -20,13 +21,14 @@ public class Media {
         this.cover = cover;
     }
 
-    public Media(int _id, String title, String director, int type, String description, Bitmap cover) {
+    public Media(int _id, String title, String director, int type, String description, Bitmap cover, int seqId) {
         this._id = _id;
         this.title = title;
         this.director = director;
         this.type = type;
         this.description = description;
         this.cover = cover;
+        this.seqId = seqId;
     }
 
     public int get_id() {
@@ -91,5 +93,13 @@ public class Media {
 
     public void setCover(Bitmap cover) {
         this.cover = cover;
+    }
+
+    public int getSeqId() {
+        return seqId;
+    }
+
+    public void setSeqId(int seqId) {
+        this.seqId = seqId;
     }
 }

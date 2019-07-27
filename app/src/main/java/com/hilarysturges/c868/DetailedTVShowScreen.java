@@ -111,6 +111,8 @@ public class DetailedTVShowScreen extends AppCompatActivity {
         deleteTVShowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deleteActors(_id);
+                deleteSeasons(_id);
                 deleteTVShow(_id, index);
                 Intent i = new Intent(getApplicationContext(), TVShowsScreen.class);
                 startActivity(i);
@@ -131,6 +133,20 @@ public class DetailedTVShowScreen extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "TV Show updated", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void deleteActors(int _id) {
+        databaseMan.removeActors(_id);
+        MainActivity.actors.clear();
+        MainActivity.counterActors = 0;
+        MainActivity.initData();
+    }
+
+    public void deleteSeasons(int _id) {
+        databaseMan.removeSeasons(_id);
+        MainActivity.seasons.clear();
+        MainActivity.counterSeasons = 0;
+        MainActivity.initData();
     }
 
     public void addActors(int _id) {

@@ -4,11 +4,20 @@ public class Season {
     private int _id;
     private String title;
     private int tv_id;
+    private int index;
 
     public Season(int _id, String title, int tv_id) {
         this._id = _id;
         this.title = title;
         this.tv_id = tv_id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex() {
+        this.index = MainActivity.seasons.lastIndexOf(this);
     }
 
     public Season(String title) {

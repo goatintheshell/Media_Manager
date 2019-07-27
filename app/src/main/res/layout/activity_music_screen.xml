@@ -30,7 +30,7 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="450dp"
+            android:layout_height="400dp"
             android:fillViewport="true"
             android:paddingTop="20dp">
 
@@ -57,7 +57,7 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/browseByDirectorMovies"
+                android:id="@+id/browseByArtistMusic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -65,7 +65,15 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/browseAlphabeticallyMovies"
+                android:id="@+id/browseByTrackMusic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/track"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/browseAlphabeticallyMusic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"

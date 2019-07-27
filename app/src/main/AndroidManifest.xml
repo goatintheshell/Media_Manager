@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddTVShowScreen"></activity>
+        <activity android:name=".SearchResultScreen"></activity>
+        <activity android:name=".AddTVShowScreen" />
         <activity android:name=".AddMovieScreen" />
         <activity android:name=".AddMusicScreen" />
         <activity android:name=".AddMediaScreen" />

@@ -90,6 +90,7 @@ public class DetailedMusicScreen extends AppCompatActivity {
         deleteMusicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                deleteTracks(_id);
                 deleteMusic(_id, index);
                 Intent i = new Intent(getApplicationContext(), MusicScreen.class);
                 startActivity(i);
@@ -108,6 +109,13 @@ public class DetailedMusicScreen extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Music updated", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void deleteTracks(int _id) {
+        databaseMan.removeTracks(_id);
+        MainActivity.tracks.clear();
+        MainActivity.counterTracks = 0;
+        MainActivity.initData();
     }
 
     public void addTracks(int _id) {

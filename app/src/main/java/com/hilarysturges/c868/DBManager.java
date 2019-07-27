@@ -42,6 +42,7 @@ public class DBManager extends SQLiteOpenHelper {
     public static final String COLUMN_NUM_ACT_Mo = "numActorsMo";
     public static final String COLUMN_COVER_Mo = "coverMo";
     public static final String COLUMN_RATING_Mo = "ratingMo";
+    public static final String COLUMN_SEQ_Mo = "sequenceMo";
     public static final String TABLE_ACTORS = "actors";
     public static final String COLUMN_ID_A = "_idA";
     public static final String COLUMN_NAME_A = "nameA";
@@ -57,10 +58,14 @@ public class DBManager extends SQLiteOpenHelper {
     public static final String COLUMN_COVER_Tv = "coverTv";
     public static final String COLUMN_ACTORS_Tv = "actorsTv";
     public static final String COLUMN_SEAS_Tv = "seasonsTv";
+    public static final String COLUMN_SEQ_Tv = "sequenceTv";
     public static final String TABLE_SEASONS = "seasons";
     public static final String COLUMN_ID_S = "_idS";
     public static final String COLUMN_TITLE_S = "titleS";
     public static final String COLUMN_T_ID_S = "tvIdS";
+    public static final String TABLE_SEQUENCE = "sequence";
+    public static final String COLUMN_ID_SEQ = "_idSeq";
+    public static final String COLUMN_BLANK_SEQ = "blankSeq";
 
     public DBManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -69,6 +74,10 @@ public class DBManager extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         System.out.println("database created");
+        String counterQuery = "CREATE TABLE  IF NOT EXISTS " + TABLE_SEQUENCE + " (" + COLUMN_ID_SEQ + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_BLANK_SEQ + " TEXT);";
+        sqLiteDatabase.execSQL(counterQuery);
+
         String musicQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_MUSIC + " (" + COLUMN_ID_Mu + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TYPE_Mu + " INTEGER, " + COLUMN_TITLE_Mu + " TEXT, " + COLUMN_ARTIST_Mu + " TEXT, "
                 + COLUMN_PRODUCER_Mu + " TEXT, " + COLUMN_DESC_Mu + " TEXT, " + COLUMN_NUM_TRACKS_Mu + " INTEGER, "
@@ -83,19 +92,22 @@ public class DBManager extends SQLiteOpenHelper {
         String moviesQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_MOVIES + " (" + COLUMN_ID_Mo + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TYPE_Mo + " INTEGER, " + COLUMN_TITLE_Mo + " TEXT, " + COLUMN_DIRE_Mo + " TEXT, "
                 + COLUMN_DESC_Mo + " TEXT, " + COLUMN_LENGTH_Mo + " INTEGER, " + COLUMN_ACTORS_Mo + " INTEGER, "
-                + COLUMN_NUM_ACT_Mo + " INTEGER, " + COLUMN_RATING_Mo + " TEXT, " + COLUMN_COVER_Mo + " BLOB);";
+                + COLUMN_SEQ_Mo + " INTEGER, "
+                + COLUMN_NUM_ACT_Mo + " INTEGER, " + COLUMN_RATING_Mo + " TEXT, " + COLUMN_COVER_Mo + " BLOB, "
+                + "FOREIGN KEY (" + COLUMN_SEQ_Mo + ") REFERENCES " + TABLE_SEQUENCE + "(" + COLUMN_ID_SEQ + "));";
         sqLiteDatabase.execSQL(moviesQuery);
 
         String actorsQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTORS + " (" + COLUMN_ID_A + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_NAME_A + " TEXT, " + COLUMN_M_ID_A + " INTEGER, "
-                + "FOREIGN KEY (" + COLUMN_M_ID_A + ") REFERENCES " + TABLE_MOVIES + "(" + COLUMN_ID_Mo + "));";
+                + "FOREIGN KEY (" + COLUMN_M_ID_A + ") REFERENCES " + TABLE_SEQUENCE + "(" + COLUMN_ID_SEQ + "));";
         sqLiteDatabase.execSQL(actorsQuery);
 
         String tvShowsQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_TV_SHOWS + " (" + COLUMN_ID_Tv + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TITLE_Tv + " TEXT, " + COLUMN_TYPE_Tv + " INTEGER, " + COLUMN_DIRE_Tv + " TEXT, "
                 + COLUMN_NUM_ACT_Tv + " INTEGER, " + COLUMN_NUM_SEA_Tv + " INTEGER, "
-                + COLUMN_ACTORS_Tv + " INTEGER, " + COLUMN_SEAS_Tv + " INTEGER, "
-                + COLUMN_DESC_Tv + " TEXT," + COLUMN_COVER_Tv + " BLOB);";
+                + COLUMN_ACTORS_Tv + " INTEGER, " + COLUMN_SEAS_Tv + " INTEGER, " + COLUMN_SEQ_Tv + " INTEGER, "
+                + COLUMN_DESC_Tv + " TEXT," + COLUMN_COVER_Tv + " BLOB, "
+                + "FOREIGN KEY (" + COLUMN_SEQ_Tv + ") REFERENCES " + TABLE_SEQUENCE + "(" + COLUMN_ID_SEQ + "));";
         sqLiteDatabase.execSQL(tvShowsQuery);
 
         String seasonsQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_SEASONS + " (" + COLUMN_ID_S + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -113,6 +125,25 @@ public class DBManager extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_TV_SHOWS);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_SEASONS);
         onCreate(sqLiteDatabase);
+    }
+
+    public void incrementSequence(String title) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_BLANK_SEQ, title);
+        db.insert(TABLE_SEQUENCE, null, values);
+        db.close();
+    }
+
+    public int getLastSequence() {
+        int sequenceId;
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_SEQUENCE + " ORDER BY " + COLUMN_ID_SEQ + " DESC LIMIT 1;";
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        sequenceId = c.getInt(c.getColumnIndex(COLUMN_ID_SEQ));
+        c.close();
+        return sequenceId;
     }
 
     public void addMusic(Music music, int numTracks) {
@@ -137,7 +168,7 @@ public class DBManager extends SQLiteOpenHelper {
 
     }
 
-    public void addMovie(Movie movie, int numActors) {
+    public void addMovie(Movie movie, int numActors, int seq_id) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         int actors = 0;
@@ -153,24 +184,14 @@ public class DBManager extends SQLiteOpenHelper {
         values.put(COLUMN_TYPE_Mo, movie.getType());
         values.put(COLUMN_COVER_Mo, bitmapToByte(movie.getCover()));
         values.put(COLUMN_ACTORS_Mo, actors);
+        values.put(COLUMN_SEQ_Mo, seq_id);
 
         db.insert(TABLE_MOVIES,null, values);
         db.close();
 
     }
 
-    public void addActors(ArrayList<String> actors, int _id) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        for (int i=0; i<actors.size() ; i++) {
-            values.put(COLUMN_NAME_A, actors.get(i));
-            values.put(COLUMN_M_ID_A, _id);
-            db.insert(TABLE_ACTORS, null, values);
-        }
-        db.close();
-    }
-
-    public void addTVShow(TVShow tvShow, int numActors, int numSeasons) {
+    public void addTVShow(TVShow tvShow, int numActors, int numSeasons, int seq_id) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         int actors = 0;
@@ -189,6 +210,7 @@ public class DBManager extends SQLiteOpenHelper {
         values.put(COLUMN_COVER_Tv, bitmapToByte(tvShow.getCover()));
         values.put(COLUMN_ACTORS_Tv, actors);
         values.put(COLUMN_SEAS_Tv, seasons);
+        values.put(COLUMN_SEQ_Tv, seq_id);
 
         db.insert(TABLE_TV_SHOWS,null, values);
         db.close();
@@ -216,6 +238,27 @@ public class DBManager extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void removeTracks (int music_id) {
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<Integer> listOfIds = new ArrayList<>();
+        String query = "SELECT " + COLUMN_M_ID_Tr + " FROM " + TABLE_TRACKS + ";";
+
+        Cursor c = db.rawQuery(query,null);
+        c.moveToFirst();
+
+        while (!c.isAfterLast()) {
+            if (c.getString(c.getColumnIndex(COLUMN_M_ID_Tr))!=null) {
+                listOfIds.add(c.getInt(c.getColumnIndex(COLUMN_M_ID_Tr)));
+            } c.moveToNext();
+        } c.close();
+
+        if (listOfIds.contains(music_id)) {
+            db.execSQL("DELETE FROM " + TABLE_TRACKS + " WHERE " + COLUMN_M_ID_Tr + " = " + music_id + ";");
+        } else {System.out.println("music_id not found");}
+
+        db.close();
+    }
+
     public void removeMovie (int ID) {
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<Integer> listOfIds = new ArrayList<>();
@@ -237,6 +280,27 @@ public class DBManager extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void removeActors (int media_id) {
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<Integer> listOfIds = new ArrayList<>();
+        String query = "SELECT " + COLUMN_M_ID_A + " FROM " + TABLE_ACTORS + ";";
+
+        Cursor c = db.rawQuery(query,null);
+        c.moveToFirst();
+
+        while (!c.isAfterLast()) {
+            if (c.getString(c.getColumnIndex(COLUMN_M_ID_A))!=null) {
+                listOfIds.add(c.getInt(c.getColumnIndex(COLUMN_M_ID_A)));
+            } c.moveToNext();
+        } c.close();
+
+        if (listOfIds.contains(media_id)) {
+            db.execSQL("DELETE FROM " + TABLE_ACTORS + " WHERE " + COLUMN_M_ID_A + " = " + media_id + ";");
+        } else {System.out.println("media_id not found");}
+
+        db.close();
+    }
+
     public void removeTVShow (int ID) {
         SQLiteDatabase db = getWritableDatabase();
         ArrayList<Integer> listOfIds = new ArrayList<>();
@@ -254,6 +318,27 @@ public class DBManager extends SQLiteOpenHelper {
         if (listOfIds.contains(ID)) {
             db.execSQL("DELETE FROM " + TABLE_TV_SHOWS + " WHERE " + COLUMN_ID_Tv + " = " + ID + ";");
         } else {System.out.println("ID not found");}
+
+        db.close();
+    }
+
+    public void removeSeasons (int tvShow_id) {
+        SQLiteDatabase db = getWritableDatabase();
+        ArrayList<Integer> listOfIds = new ArrayList<>();
+        String query = "SELECT " + COLUMN_T_ID_S + " FROM " + TABLE_SEASONS + ";";
+
+        Cursor c = db.rawQuery(query,null);
+        c.moveToFirst();
+
+        while (!c.isAfterLast()) {
+            if (c.getString(c.getColumnIndex(COLUMN_T_ID_S))!=null) {
+                listOfIds.add(c.getInt(c.getColumnIndex(COLUMN_T_ID_S)));
+            } c.moveToNext();
+        } c.close();
+
+        if (listOfIds.contains(tvShow_id)) {
+            db.execSQL("DELETE FROM " + TABLE_SEASONS + " WHERE " + COLUMN_T_ID_S + " = " + tvShow_id + ";");
+        } else {System.out.println("music_id not found");}
 
         db.close();
     }
@@ -306,7 +391,7 @@ public class DBManager extends SQLiteOpenHelper {
 
         while (!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex(COLUMN_ID_Mo))!=null) {
-                Movie movie = new Movie(c.getInt(c.getColumnIndex(COLUMN_ID_Mo)), c.getString(c.getColumnIndex(COLUMN_TITLE_Mo)), c.getString(c.getColumnIndex(COLUMN_DIRE_Mo)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Mo)), c.getString(c.getColumnIndex(COLUMN_DESC_Mo)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Mo))), c.getInt(c.getColumnIndex(COLUMN_LENGTH_Mo)), c.getString(c.getColumnIndex(COLUMN_RATING_Mo)));
+                Movie movie = new Movie(c.getInt(c.getColumnIndex(COLUMN_ID_Mo)), c.getString(c.getColumnIndex(COLUMN_TITLE_Mo)), c.getString(c.getColumnIndex(COLUMN_DIRE_Mo)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Mo)), c.getString(c.getColumnIndex(COLUMN_DESC_Mo)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Mo))), c.getInt(c.getColumnIndex(COLUMN_LENGTH_Mo)), c.getString(c.getColumnIndex(COLUMN_RATING_Mo)), c.getInt(c.getColumnIndex(COLUMN_SEQ_Mo)));
                 movies.add(movie);
             } c.moveToNext();
         } c.close();
@@ -344,7 +429,7 @@ public class DBManager extends SQLiteOpenHelper {
 
         while (!c.isAfterLast()) {
             if (c.getString(c.getColumnIndex(COLUMN_ID_Tv))!=null) {
-                TVShow tvShow = new TVShow(c.getInt(c.getColumnIndex(COLUMN_ID_Tv)), c.getString(c.getColumnIndex(COLUMN_TITLE_Tv)), c.getString(c.getColumnIndex(COLUMN_DIRE_Tv)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Tv)), c.getString(c.getColumnIndex(COLUMN_DESC_Tv)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Tv))));
+                TVShow tvShow = new TVShow(c.getInt(c.getColumnIndex(COLUMN_ID_Tv)), c.getString(c.getColumnIndex(COLUMN_TITLE_Tv)), c.getString(c.getColumnIndex(COLUMN_DIRE_Tv)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Tv)), c.getString(c.getColumnIndex(COLUMN_DESC_Tv)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Tv))),c.getInt(c.getColumnIndex(COLUMN_SEQ_Tv)));
                 tvShows.add(tvShow);
             } c.moveToNext();
         } c.close();
@@ -378,7 +463,7 @@ public class DBManager extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(query,null);
         c.moveToFirst();
-        Movie movie = new Movie(c.getInt(c.getColumnIndex(COLUMN_ID_Mo)), c.getString(c.getColumnIndex(COLUMN_TITLE_Mo)), c.getString(c.getColumnIndex(COLUMN_DIRE_Mo)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Mo)), c.getString(c.getColumnIndex(COLUMN_DESC_Mo)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Mo))), c.getInt(c.getColumnIndex(COLUMN_LENGTH_Mo)), c.getString(c.getColumnIndex(COLUMN_RATING_Mo)));
+        Movie movie = new Movie(c.getInt(c.getColumnIndex(COLUMN_ID_Mo)), c.getString(c.getColumnIndex(COLUMN_TITLE_Mo)), c.getString(c.getColumnIndex(COLUMN_DIRE_Mo)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Mo)), c.getString(c.getColumnIndex(COLUMN_DESC_Mo)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Mo))), c.getInt(c.getColumnIndex(COLUMN_LENGTH_Mo)), c.getString(c.getColumnIndex(COLUMN_RATING_Mo)), c.getInt(c.getColumnIndex(COLUMN_SEQ_Mo)));
         close();
 
         return movie;
@@ -404,7 +489,7 @@ public class DBManager extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(query,null);
         c.moveToFirst();
-        TVShow tvShow = new TVShow(c.getInt(c.getColumnIndex(COLUMN_ID_Tv)), c.getString(c.getColumnIndex(COLUMN_TITLE_Tv)), c.getString(c.getColumnIndex(COLUMN_DIRE_Tv)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Tv)), c.getString(c.getColumnIndex(COLUMN_DESC_Tv)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Tv))));
+        TVShow tvShow = new TVShow(c.getInt(c.getColumnIndex(COLUMN_ID_Tv)), c.getString(c.getColumnIndex(COLUMN_TITLE_Tv)), c.getString(c.getColumnIndex(COLUMN_DIRE_Tv)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Tv)), c.getString(c.getColumnIndex(COLUMN_DESC_Tv)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Tv))),c.getInt(c.getColumnIndex(COLUMN_SEQ_Tv)));
         close();
 
         return tvShow;
@@ -456,12 +541,12 @@ public class DBManager extends SQLiteOpenHelper {
 
     }
 
-    public void addActor(String name, int media_id) {
+    public void addActor(String name, int media_seq_id) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put(COLUMN_NAME_A, name);
-        values.put(COLUMN_M_ID_A, media_id);
+        values.put(COLUMN_M_ID_A, media_seq_id);
 
         db.insert(TABLE_ACTORS, null, values);
         db.close();
@@ -539,6 +624,76 @@ public class DBManager extends SQLiteOpenHelper {
         db.execSQL(query);
         db.close();
 
+    }
+
+    public ArrayList<Actor> getMovieActors() {
+        ArrayList<Actor> actors = new ArrayList<>();
+        ArrayList<Integer> movie_ids = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String queryActors = "SELECT * FROM " + TABLE_ACTORS + ";" ;
+        String queryMovies = "SELECT " + COLUMN_SEQ_Mo + " FROM " + TABLE_MOVIES + ";" ;
+
+        Cursor cM = db.rawQuery(queryMovies, null);
+        cM.moveToFirst();
+
+        Cursor cA = db.rawQuery(queryActors, null);
+        cA.moveToFirst();
+
+        while (!cM.isAfterLast()) {
+            if (!cM.isNull(cM.getColumnIndex(COLUMN_SEQ_Mo))) {
+                movie_ids.add(cM.getInt(cM.getColumnIndex(COLUMN_SEQ_Mo)));
+                cM.moveToNext();
+            }
+        } cM.close();
+
+        while (!cA.isAfterLast()) {
+            if (!cA.isNull(cA.getColumnIndex(COLUMN_M_ID_A))) {
+                if (movie_ids.contains(cA.getInt(cA.getColumnIndex(COLUMN_M_ID_A)))) {
+                    Actor actor = new Actor(cA.getInt(cA.getColumnIndex(COLUMN_ID_A)), cA.getString(cA.getColumnIndex(COLUMN_NAME_A)), cA.getInt(cA.getColumnIndex(COLUMN_M_ID_A)));
+                    actors.add(actor);
+                    cA.moveToNext();
+                } else {
+                    cA.moveToNext();
+                }
+            }
+        } cA.close();
+
+        return actors;
+    }
+
+    public ArrayList<Actor> getTVShowActors() {
+        ArrayList<Actor> actors = new ArrayList<>();
+        ArrayList<Integer> movie_ids = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        String queryActors = "SELECT * FROM " + TABLE_ACTORS + ";" ;
+        String queryMovies = "SELECT " + COLUMN_SEQ_Tv + " FROM " + TABLE_TV_SHOWS + ";" ;
+
+        Cursor cT = db.rawQuery(queryMovies, null);
+        cT.moveToFirst();
+
+        Cursor cA = db.rawQuery(queryActors, null);
+        cA.moveToFirst();
+
+        while (!cT.isAfterLast()) {
+            if (!cT.isNull(cT.getColumnIndex(COLUMN_SEQ_Tv))) {
+                movie_ids.add(cT.getInt(cT.getColumnIndex(COLUMN_SEQ_Tv)));
+                cT.moveToNext();
+            }
+        } cT.close();
+
+        while (!cA.isAfterLast()) {
+            if (!cA.isNull(cA.getColumnIndex(COLUMN_M_ID_A))) {
+                if (movie_ids.contains(cA.getInt(cA.getColumnIndex(COLUMN_M_ID_A)))) {
+                    Actor actor = new Actor(cA.getInt(cA.getColumnIndex(COLUMN_ID_A)), cA.getString(cA.getColumnIndex(COLUMN_NAME_A)), cA.getInt(cA.getColumnIndex(COLUMN_M_ID_A)));
+                    actors.add(actor);
+                    cA.moveToNext();
+                } else {
+                    cA.moveToNext();
+                }
+            }
+        } cA.close();
+
+        return actors;
     }
 
     public static Bitmap getBitmapFromBytes(byte[] bytes) {

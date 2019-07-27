@@ -33,7 +33,7 @@
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="375dp"
             android:fillViewport="true"
             android:paddingTop="20dp">
 
@@ -60,7 +60,7 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/browseByDirectorMovies"
+                android:id="@+id/browseByDirectorTVShow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -68,7 +68,7 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/browseByActorMovies"
+                android:id="@+id/browseByActorTVShow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
@@ -76,7 +76,15 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/browseAlphabeticallyMovies"
+                android:id="@+id/browseBySeasonTVShow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/season"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/browseAlphabeticallyTVShow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
