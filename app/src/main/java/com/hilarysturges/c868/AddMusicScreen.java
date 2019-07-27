@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,6 +28,7 @@ public class AddMusicScreen extends AppCompatActivity {
 
     static final EditText[] addTracks = new EditText[29];
 
+    RadioButton record;
     RadioButton cassette;
     RadioButton cd;
     EditText titleEdit;
@@ -52,6 +54,7 @@ public class AddMusicScreen extends AppCompatActivity {
 
         cd = findViewById(R.id.musicCD);
         cassette = findViewById(R.id.musicCassette);
+        record = findViewById(R.id.musicRecord);
         titleEdit = findViewById(R.id.musicTitle);
         artistEdit = findViewById(R.id.musicArtist);
         producerEdit = findViewById(R.id.musicProducer);
@@ -77,10 +80,25 @@ public class AddMusicScreen extends AppCompatActivity {
         addMusicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addMusic();
-                addTracks();
-                Intent i = new Intent(getApplicationContext(), MusicScreen.class);
-                startActivity(i);
+                if ((!cd.isChecked()) && (!cassette.isChecked()) && (!record.isChecked())) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (titleEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (producerEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (lengthEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (artistEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (descriptionEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    addMusic();
+                    addTracks();
+                    Intent i = new Intent(getApplicationContext(), MusicScreen.class);
+                    startActivity(i);
+                }
             }
         });
     }

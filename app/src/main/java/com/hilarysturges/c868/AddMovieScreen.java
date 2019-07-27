@@ -11,6 +11,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AddMovieScreen extends AppCompatActivity {
@@ -24,6 +27,8 @@ public class AddMovieScreen extends AppCompatActivity {
 
     static final EditText[] addActors = new EditText[29];
 
+    RadioGroup mediaType;
+    RadioButton vhs;
     RadioButton dvd;
     RadioButton bluray;
     EditText titleEdit;
@@ -47,6 +52,8 @@ public class AddMovieScreen extends AppCompatActivity {
         actorsLayout = findViewById(R.id.addActorsMovieLayout);
         addActorsButton = findViewById(R.id.addActorsMovieButton);
 
+        mediaType = findViewById(R.id.movieRadioGroup);
+        vhs = findViewById(R.id.movieVHS);
         dvd = findViewById(R.id.movieDVD);
         bluray = findViewById(R.id.movieBluRay);
         titleEdit = findViewById(R.id.movieTitle);
@@ -74,11 +81,27 @@ public class AddMovieScreen extends AppCompatActivity {
         addMovieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                databaseMan.incrementSequence(titleEdit.getText().toString());
-                addMovie();
-                addActors();
-                Intent i = new Intent(getApplicationContext(), MoviesScreen.class);
-                startActivity(i);
+                if ((!bluray.isChecked()) && (!dvd.isChecked()) && (!vhs.isChecked())) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (titleEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (directorEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (lengthEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (ratingEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (descriptionEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                }
+
+                else {
+                    databaseMan.incrementSequence(titleEdit.getText().toString());
+                    addMovie();
+                    addActors();
+                    Intent i = new Intent(getApplicationContext(), MoviesScreen.class);
+                    startActivity(i);
+                }
             }
         });
     }

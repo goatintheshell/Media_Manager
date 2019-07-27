@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -31,6 +32,7 @@ public class AddTVShowScreen extends AppCompatActivity {
     static final EditText[] addActors = new EditText[29];
     static final EditText[] addSeasons = new EditText[29];
 
+    RadioButton vhs;
     RadioButton dvd;
     RadioButton bluray;
     EditText titleEdit;
@@ -54,6 +56,7 @@ public class AddTVShowScreen extends AppCompatActivity {
         seasonsLayout = findViewById(R.id.addSeasonsLayout);
         addSeasonsButton = findViewById(R.id.addSeasonsButton);
 
+        vhs = findViewById(R.id.tvShowVHS);
         dvd = findViewById(R.id.tvShowDVD);
         bluray = findViewById(R.id.tvShowBluRay);
         titleEdit = findViewById(R.id.tvShowTitle);
@@ -89,16 +92,27 @@ public class AddTVShowScreen extends AppCompatActivity {
         addTVShowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    databaseMan.incrementSequence(titleEdit.getText().toString());
-                    addTVShow();
-                    addActors();
-                    addSeasons();
-                } catch (Exception e) {
-                    System.out.println("Adding show failed: " + e.getMessage());
+                if ((!bluray.isChecked()) && (!dvd.isChecked()) && (!vhs.isChecked())) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (titleEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (directorEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                } else if (descriptionEdit.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
                 }
-                Intent i = new Intent(getApplicationContext(), TVShowsScreen.class);
-                startActivity(i);
+                else {
+                    try {
+                        databaseMan.incrementSequence(titleEdit.getText().toString());
+                        addTVShow();
+                        addActors();
+                        addSeasons();
+                    } catch (Exception e) {
+                        System.out.println("Adding show failed: " + e.getMessage());
+                    }
+                    Intent i = new Intent(getApplicationContext(), TVShowsScreen.class);
+                    startActivity(i);
+                }
             }
         });
 
