@@ -1,34 +1,20 @@
 package com.hilarysturges.c868;
 
-import android.graphics.Bitmap;
-import java.util.ArrayList;
+import java.sql.Date;
+import java.util.Calendar;
 
 public class Media {
     private int _id;
-    private String title;
-    private String director;
-    private int type;
-    private ArrayList<Actor> actors;
-    private String description;
-    private Bitmap cover;
-    private int seqId;
+    private int index;
+    private Date added;
+    private Calendar cal = Calendar.getInstance();
+    private Date curDate = new Date(cal.getTime().getTime());
 
-    public Media(String title, String director, int type, String description, Bitmap cover) {
-        this.title = title;
-        this.director = director;
-        this.type = type;
-        this.description = description;
-        this.cover = cover;
+    public Media() {
     }
 
-    public Media(int _id, String title, String director, int type, String description, Bitmap cover, int seqId) {
-        this._id = _id;
-        this.title = title;
-        this.director = director;
-        this.type = type;
-        this.description = description;
-        this.cover = cover;
-        this.seqId = seqId;
+    public Media(int id) {
+        this._id = id;
     }
 
     public int get_id() {
@@ -39,65 +25,30 @@ public class Media {
         this._id = _id;
     }
 
-    public String getTitle() {
-        return title;
+    public int getIndex() {
+        return index;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setIndex() {
+        if (this instanceof Music)
+            this.index = MainActivity.music.lastIndexOf(this);
+        if (this instanceof Movie)
+            this.index = MainActivity.movies.lastIndexOf(this);
+        if (this instanceof TVShow)
+            this.index = MainActivity.tvShows.lastIndexOf(this);
+        if (this instanceof Track)
+            this.index = MainActivity.tracks.lastIndexOf(this);
+        if (this instanceof Actor)
+            this.index = MainActivity.actors.lastIndexOf(this);
+        if (this instanceof Season)
+            this.index = MainActivity.seasons.lastIndexOf(this);
     }
 
-    public String getDirector() {
-        return director;
+    public Date getAdded() {
+        return added;
     }
 
-    public void setDirector(String director) {
-        this.director = director;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public ArrayList<Actor> getActors() {
-        return actors;
-    }
-
-    public Actor getActor(int i) {
-        return actors.get(i);
-    }
-
-    public void setActors(ArrayList<Actor> actors) { this.actors = actors; }
-
-    public void setActor(Actor actor) {
-        actors.add(actor);
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Bitmap getCover() {
-        return cover;
-    }
-
-    public void setCover(Bitmap cover) {
-        this.cover = cover;
-    }
-
-    public int getSeqId() {
-        return seqId;
-    }
-
-    public void setSeqId(int seqId) {
-        this.seqId = seqId;
+    public void setAdded() {
+        this.added = curDate;
     }
 }

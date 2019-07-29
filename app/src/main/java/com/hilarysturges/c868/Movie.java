@@ -1,19 +1,10 @@
 package com.hilarysturges.c868;
 
-
 import android.graphics.Bitmap;
 
-import java.sql.Date;
-import java.util.Calendar;
-
-public class Movie extends Media {
+public class Movie extends Video {
     private int length;
     private String rating;
-    private int index;
-    private Date added;
-
-    private Calendar cal = Calendar.getInstance();
-    private Date curDate = new Date(cal.getTime().getTime());
 
     public Movie(String title, String director, int type, String description, Bitmap cover, int length, String rating) {
         super(title, director, type, description, cover);
@@ -25,22 +16,6 @@ public class Movie extends Media {
         super(_id, title, director, type, description, cover, seqId);
         this.length = length;
         this.rating = rating;
-    }
-
-    public Date getAdded() {
-        return added;
-    }
-
-    public void setAdded() {
-        this.added = curDate;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex() {
-        this.index = MainActivity.movies.lastIndexOf(this);
     }
 
     public int getLength() {

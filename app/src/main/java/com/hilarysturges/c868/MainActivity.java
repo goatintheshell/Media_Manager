@@ -1,16 +1,12 @@
 package com.hilarysturges.c868;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.TextView;
-
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -321,10 +317,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public ArrayList<Integer> getResultFromHashMap(HashMap<Integer, String> hashMap, String searchText) {
+        char empty = ' ';
+        if (empty == searchText.charAt(searchText.length()-1)) {
+            searchText = searchText.substring(0, searchText.length()-1);
+        }
+        String searchTextPlusSpace = searchText + (" ");
         ArrayList<Integer> keys = new ArrayList<>();
-        if (hashMap.containsValue(searchText)) {
+        if (hashMap.containsValue(searchText) || hashMap.containsValue(searchTextPlusSpace)) {
             for (Map.Entry entry : hashMap.entrySet()) {
                 if (Objects.equals(searchText, entry.getValue())) {
+                    keys.add(Integer.parseInt(entry.getKey().toString()));
+                }
+                if (Objects.equals(searchTextPlusSpace, entry.getValue())) {
                     keys.add(Integer.parseInt(entry.getKey().toString()));
                 }
             }
