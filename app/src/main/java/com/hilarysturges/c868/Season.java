@@ -1,15 +1,39 @@
 package com.hilarysturges.c868;
 
+import java.sql.Date;
+import java.util.Calendar;
+
 public class Season {
     private int _id;
     private String title;
     private int tv_id;
     private int index;
+    private Date added;
+    private TVShow tvShow;
+
+    private Calendar cal = Calendar.getInstance();
+    private Date curDate = new Date(cal.getTime().getTime());
 
     public Season(int _id, String title, int tv_id) {
         this._id = _id;
         this.title = title;
         this.tv_id = tv_id;
+    }
+
+    public TVShow getTvShow() {
+        return tvShow;
+    }
+
+    public void setTvShow(TVShow tvShow) {
+        this.tvShow = tvShow;
+    }
+
+    public Date getAdded() {
+        return added;
+    }
+
+    public void setAdded() {
+        this.added = curDate;
     }
 
     public int getIndex() {

@@ -1,16 +1,49 @@
 package com.hilarysturges.c868;
 
 
+import java.sql.Date;
+import java.util.Calendar;
+
 public class Actor {
     private int _id;
     private String name;
     private int media_id;
     private int index;
+    private Date added;
+    private Movie movie;
+    private TVShow tvShow;
+
+    private Calendar cal = Calendar.getInstance();
+    private Date curDate = new Date(cal.getTime().getTime());
 
     public Actor(int _id, String name, int media_id) {
         this._id = _id;
         this.name = name;
         this.media_id = media_id;
+    }
+
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
+
+    public TVShow getTvShow() {
+        return tvShow;
+    }
+
+    public void setTvShow(TVShow tvShow) {
+        this.tvShow = tvShow;
+    }
+
+    public Date getAdded() {
+        return added;
+    }
+
+    public void setAdded() {
+        this.added = curDate;
     }
 
     public int getIndex() {

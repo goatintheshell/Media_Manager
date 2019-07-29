@@ -129,6 +129,8 @@ public class AddTVShowScreen extends AppCompatActivity {
         databaseMan.addTVShow(tvShow, getNumActors(), getNumSeasons(), sequenceId);
         TVShow tvShow1 = databaseMan.getLastTVShow();
         MainActivity.tvShows.add(tvShow1);
+        tvShow1.setIndex();
+        tvShow1.setAdded();
     }
 
     public Bitmap getCover(int type) {
@@ -176,6 +178,9 @@ public class AddTVShowScreen extends AppCompatActivity {
                     databaseMan.addActor(actorName, _id);
                     Actor actor = databaseMan.getLastActor();
                     MainActivity.actors.add(actor);
+                    actor.setAdded();
+                    actor.setIndex();
+                    actor.setTvShow(databaseMan.getLastTVShow());
                 }
         }
     }
@@ -189,6 +194,9 @@ public class AddTVShowScreen extends AppCompatActivity {
                     databaseMan.addSeason(seasonTitle, _id);
                     Season season = databaseMan.getLastSeason();
                     MainActivity.seasons.add(season);
+                    season.setAdded();
+                    season.setIndex();
+                    season.setTvShow(databaseMan.getLastTVShow());
                 }
         }
     }

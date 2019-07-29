@@ -7,10 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
-
 import java.io.ByteArrayOutputStream;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class DBManager extends SQLiteOpenHelper {
 
@@ -27,10 +27,12 @@ public class DBManager extends SQLiteOpenHelper {
     public static final String COLUMN_LENGTH_Mu = "lengthMu";
     public static final String COLUMN_TRACKS_Mu = "tracksMu";
     public static final String COLUMN_COVER_Mu = "coverMu";
+    public static final String COLUMN_TSTAMP_Mu = "timestampMu";
     public static final String TABLE_TRACKS = "tracks";
     public static final String COLUMN_ID_Tr = "_idTr";
     public static final String COLUMN_TITLE_Tr = "titleTr";
     public static final String COLUMN_M_ID_Tr = "musicIdTr";
+    public static final String COLUMN_TSTAMP_Tr = "timestampTr";
     public static final String TABLE_MOVIES = "movies";
     public static final String COLUMN_ID_Mo = "_idMo";
     public static final String COLUMN_TYPE_Mo = "typeMo";
@@ -43,10 +45,12 @@ public class DBManager extends SQLiteOpenHelper {
     public static final String COLUMN_COVER_Mo = "coverMo";
     public static final String COLUMN_RATING_Mo = "ratingMo";
     public static final String COLUMN_SEQ_Mo = "sequenceMo";
+    public static final String COLUMN_TSTAMP_Mo = "timestampMo";
     public static final String TABLE_ACTORS = "actors";
     public static final String COLUMN_ID_A = "_idA";
     public static final String COLUMN_NAME_A = "nameA";
     public static final String COLUMN_M_ID_A = "mediaIdA";
+    public static final String COLUMN_TSTAMP_A = "timestampA";
     public static final String TABLE_TV_SHOWS = "tvShows";
     public static final String COLUMN_ID_Tv = "_idTv";
     public static final String COLUMN_TITLE_Tv = "titleTv";
@@ -59,13 +63,18 @@ public class DBManager extends SQLiteOpenHelper {
     public static final String COLUMN_ACTORS_Tv = "actorsTv";
     public static final String COLUMN_SEAS_Tv = "seasonsTv";
     public static final String COLUMN_SEQ_Tv = "sequenceTv";
+    public static final String COLUMN_TSTAMP_Tv = "timestampTv";
     public static final String TABLE_SEASONS = "seasons";
     public static final String COLUMN_ID_S = "_idS";
     public static final String COLUMN_TITLE_S = "titleS";
     public static final String COLUMN_T_ID_S = "tvIdS";
+    public static final String COLUMN_TSTAMP_S = "timestampS";
     public static final String TABLE_SEQUENCE = "sequence";
     public static final String COLUMN_ID_SEQ = "_idSeq";
     public static final String COLUMN_BLANK_SEQ = "blankSeq";
+
+    private Calendar cal = Calendar.getInstance();
+    private Date curDate = new Date(cal.getTime().getTime());
 
     public DBManager(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, DATABASE_VERSION);
@@ -81,24 +90,25 @@ public class DBManager extends SQLiteOpenHelper {
         String musicQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_MUSIC + " (" + COLUMN_ID_Mu + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TYPE_Mu + " INTEGER, " + COLUMN_TITLE_Mu + " TEXT, " + COLUMN_ARTIST_Mu + " TEXT, "
                 + COLUMN_PRODUCER_Mu + " TEXT, " + COLUMN_DESC_Mu + " TEXT, " + COLUMN_NUM_TRACKS_Mu + " INTEGER, "
+                + COLUMN_TSTAMP_Mu + " DATE, "
                 + COLUMN_LENGTH_Mu + " INTEGER, "+ COLUMN_COVER_Mu + " BLOB, " + COLUMN_TRACKS_Mu + " INTEGER);";
         sqLiteDatabase.execSQL(musicQuery);
 
         String tracksQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_TRACKS + " (" + COLUMN_ID_Tr + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_TITLE_Tr + " TEXT, "  + COLUMN_M_ID_Tr + " INTEGER, "
+                + COLUMN_TITLE_Tr + " TEXT, "  + COLUMN_M_ID_Tr + " INTEGER, " + COLUMN_TSTAMP_Tr + " DATE, "
                 + "FOREIGN KEY (" + COLUMN_M_ID_Tr + ") REFERENCES " + TABLE_MUSIC + "(" + COLUMN_ID_Mu + "));";
         sqLiteDatabase.execSQL(tracksQuery);
 
         String moviesQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_MOVIES + " (" + COLUMN_ID_Mo + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TYPE_Mo + " INTEGER, " + COLUMN_TITLE_Mo + " TEXT, " + COLUMN_DIRE_Mo + " TEXT, "
                 + COLUMN_DESC_Mo + " TEXT, " + COLUMN_LENGTH_Mo + " INTEGER, " + COLUMN_ACTORS_Mo + " INTEGER, "
-                + COLUMN_SEQ_Mo + " INTEGER, "
+                + COLUMN_SEQ_Mo + " INTEGER, " + COLUMN_TSTAMP_Mo + " DATE, "
                 + COLUMN_NUM_ACT_Mo + " INTEGER, " + COLUMN_RATING_Mo + " TEXT, " + COLUMN_COVER_Mo + " BLOB, "
                 + "FOREIGN KEY (" + COLUMN_SEQ_Mo + ") REFERENCES " + TABLE_SEQUENCE + "(" + COLUMN_ID_SEQ + "));";
         sqLiteDatabase.execSQL(moviesQuery);
 
         String actorsQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_ACTORS + " (" + COLUMN_ID_A + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_NAME_A + " TEXT, " + COLUMN_M_ID_A + " INTEGER, "
+                + COLUMN_NAME_A + " TEXT, " + COLUMN_M_ID_A + " INTEGER, " + COLUMN_TSTAMP_A + " DATE, "
                 + "FOREIGN KEY (" + COLUMN_M_ID_A + ") REFERENCES " + TABLE_SEQUENCE + "(" + COLUMN_ID_SEQ + "));";
         sqLiteDatabase.execSQL(actorsQuery);
 
@@ -106,12 +116,12 @@ public class DBManager extends SQLiteOpenHelper {
                 + COLUMN_TITLE_Tv + " TEXT, " + COLUMN_TYPE_Tv + " INTEGER, " + COLUMN_DIRE_Tv + " TEXT, "
                 + COLUMN_NUM_ACT_Tv + " INTEGER, " + COLUMN_NUM_SEA_Tv + " INTEGER, "
                 + COLUMN_ACTORS_Tv + " INTEGER, " + COLUMN_SEAS_Tv + " INTEGER, " + COLUMN_SEQ_Tv + " INTEGER, "
-                + COLUMN_DESC_Tv + " TEXT," + COLUMN_COVER_Tv + " BLOB, "
+                + COLUMN_DESC_Tv + " TEXT," + COLUMN_COVER_Tv + " BLOB, " + COLUMN_TSTAMP_Tv + " DATE, "
                 + "FOREIGN KEY (" + COLUMN_SEQ_Tv + ") REFERENCES " + TABLE_SEQUENCE + "(" + COLUMN_ID_SEQ + "));";
         sqLiteDatabase.execSQL(tvShowsQuery);
 
         String seasonsQuery = "CREATE TABLE IF NOT EXISTS " + TABLE_SEASONS + " (" + COLUMN_ID_S + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_TITLE_S + " TEXT, " + COLUMN_T_ID_S + " INTEGER, "
+                + COLUMN_TITLE_S + " TEXT, " + COLUMN_T_ID_S + " INTEGER, " + COLUMN_TSTAMP_S + " DATE, "
                 + "FOREIGN KEY (" + COLUMN_T_ID_S + ") REFERENCES " + TABLE_TV_SHOWS + "(" + COLUMN_ID_Tv + "));";
         sqLiteDatabase.execSQL(seasonsQuery);
     }
@@ -125,6 +135,48 @@ public class DBManager extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_TV_SHOWS);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TABLE_SEASONS);
         onCreate(sqLiteDatabase);
+    }
+
+    public void addDateMusic (int _id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_MUSIC + " SET " + COLUMN_TSTAMP_Mu + " = " + curDate + " WHERE " + COLUMN_ID_Mu + " = " + _id + ";";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void addDateMovie (int _id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_MOVIES+ " SET " + COLUMN_TSTAMP_Mo + " = " + curDate + " WHERE " + COLUMN_ID_Mo + " = " + _id + ";";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void addDateTVShow (int _id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_TV_SHOWS + " SET " + COLUMN_TSTAMP_Tv + " = " + curDate + " WHERE " + COLUMN_ID_Tv + " = " + _id + ";";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void addDateTrack (int _id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_TRACKS + " SET " + COLUMN_TSTAMP_Tr + " = " + curDate + " WHERE " + COLUMN_ID_Tr + " = " + _id + ";";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void addDateActor (int _id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_ACTORS + " SET " + COLUMN_TSTAMP_A + " = " + curDate + " WHERE " + COLUMN_ID_A + " = " + _id + ";";
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void addDateSeason (int _id) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "UPDATE " + TABLE_SEASONS + " SET " + COLUMN_TSTAMP_S + " = " + curDate + " WHERE " + COLUMN_ID_S + " = " + _id + ";";
+        db.execSQL(query);
+        db.close();
     }
 
     public void incrementSequence(String title) {
@@ -341,6 +393,57 @@ public class DBManager extends SQLiteOpenHelper {
         } else {System.out.println("music_id not found");}
 
         db.close();
+    }
+
+    public Music getMusic (int _id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_MUSIC + " WHERE " + COLUMN_ID_Mu + " = " + _id + ";";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        if (!c.isAfterLast()) {
+            Music music = new Music(c.getInt(c.getColumnIndex(COLUMN_ID_Mu)), c.getString(c.getColumnIndex(COLUMN_TITLE_Mu)), c.getString(c.getColumnIndex(COLUMN_ARTIST_Mu)), c.getString(c.getColumnIndex(COLUMN_PRODUCER_Mu)), c.getInt(c.getColumnIndex(COLUMN_LENGTH_Mu)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Mu))), c.getInt(c.getColumnIndex(COLUMN_TYPE_Mu)), c.getString(c.getColumnIndex(COLUMN_DESC_Mu)));
+            c.close();
+            return music;
+        } else {
+            c.close();
+            return null;
+        }
+    }
+
+    public Movie getMovie (int _id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_MOVIES + " WHERE " + COLUMN_ID_Mo + " = " + _id + ";";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        if (!c.isAfterLast()) {
+            Movie movie = new Movie(c.getInt(c.getColumnIndex(COLUMN_ID_Mo)), c.getString(c.getColumnIndex(COLUMN_TITLE_Mo)), c.getString(c.getColumnIndex(COLUMN_DIRE_Mo)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Mo)), c.getString(c.getColumnIndex(COLUMN_DESC_Mo)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Mo))), c.getInt(c.getColumnIndex(COLUMN_LENGTH_Mo)), c.getString(c.getColumnIndex(COLUMN_RATING_Mo)), c.getInt(c.getColumnIndex(COLUMN_SEQ_Mo)));
+            c.close();
+            return movie;
+        } else {
+            c.close();
+            return null;
+        }
+    }
+
+    public TVShow getTVShow (int _id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_TV_SHOWS + " WHERE " + COLUMN_ID_Tv + " = " + _id + ";";
+
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+
+        if (!c.isAfterLast()) {
+            TVShow tvShow = new TVShow(c.getInt(c.getColumnIndex(COLUMN_ID_Tv)), c.getString(c.getColumnIndex(COLUMN_TITLE_Tv)), c.getString(c.getColumnIndex(COLUMN_DIRE_Tv)), c.getInt(c.getColumnIndex(COLUMN_TYPE_Tv)), c.getString(c.getColumnIndex(COLUMN_DESC_Tv)), getBitmapFromBytes(c.getBlob(c.getColumnIndex(COLUMN_COVER_Tv))),c.getInt(c.getColumnIndex(COLUMN_SEQ_Tv)));
+            c.close();
+            return tvShow;
+        } else {
+            c.close();
+            return null;
+        }
     }
 
     public ArrayList<Music> musicToArray() {

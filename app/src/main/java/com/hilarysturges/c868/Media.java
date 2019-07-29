@@ -71,9 +71,7 @@ public class Media {
         return actors.get(i);
     }
 
-    public void setActors(ArrayList<Actor> actors) {
-        this.actors = actors;
-    }
+    public void setActors(ArrayList<Actor> actors) { this.actors = actors; }
 
     public void setActor(Actor actor) {
         actors.add(actor);

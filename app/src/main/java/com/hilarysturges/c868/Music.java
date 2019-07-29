@@ -2,7 +2,10 @@ package com.hilarysturges.c868;
 
 
 import android.graphics.Bitmap;
+
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Music {
     private int _id;
@@ -15,6 +18,10 @@ public class Music {
     private int type;
     private String description;
     private int index;
+    private Date added;
+
+    private Calendar cal = Calendar.getInstance();
+    private Date curDate = new Date(cal.getTime().getTime());
 
     public Music(String title, String artist, String producer, int length, Bitmap cover, int type, String description) {
         this.title = title;
@@ -35,6 +42,14 @@ public class Music {
         this.cover = cover;
         this.type = type;
         this.description = description;
+    }
+
+    public Date getAdded() {
+        return added;
+    }
+
+    public void setAdded() {
+        this.added = curDate;
     }
 
     public int getIndex() {

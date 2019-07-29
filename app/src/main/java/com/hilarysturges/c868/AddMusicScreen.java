@@ -12,12 +12,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AddMusicScreen extends AppCompatActivity {
+
+    static int testVariable;
 
     private LinearLayout tracksLayout;
     private ImageButton addTracksButton;
@@ -94,6 +95,7 @@ public class AddMusicScreen extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    testVariable = 1;
                     addMusic();
                     addTracks();
                     Intent i = new Intent(getApplicationContext(), MusicScreen.class);
@@ -114,7 +116,10 @@ public class AddMusicScreen extends AppCompatActivity {
         Music music = new Music(title, artist, producer, length, cover, type, description);
         databaseMan.addMusic(music, getNumTracks());
         Music music1 = databaseMan.getLastMusic();
+        databaseMan.addDateMusic(music1.get_id());
         MainActivity.music.add(music1);
+        music1.setAdded();
+        music1.setIndex();
     }
 
     public Bitmap getCover(int type) {
@@ -153,6 +158,9 @@ public class AddMusicScreen extends AppCompatActivity {
                     databaseMan.addTrack(trackName, _id);
                     Track track = databaseMan.getLastTrack();
                     MainActivity.tracks.add(track);
+                    track.setAdded();
+                    track.setIndex();
+                    track.setMusic(databaseMan.getLastMusic());
                 }
         }
     }

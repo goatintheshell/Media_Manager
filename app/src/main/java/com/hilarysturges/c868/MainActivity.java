@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText searchField;
     private Button searchButton;
 
+    private Button viewReportsButton;
+
     static DBManager databaseMan;
 
     static ArrayList<ArrayList> searchResult = new ArrayList<>();
@@ -71,10 +73,20 @@ public class MainActivity extends AppCompatActivity {
 
             searchField = findViewById(R.id.searchField);
             searchButton = findViewById(R.id.searchButton);
+            viewReportsButton = findViewById(R.id.viewReports);
 
             musicText = findViewById(R.id.musicMain);
             moviesText = findViewById(R.id.moviesMain);
             tvShowsText = findViewById(R.id.tvShowsMain);
+
+            viewReportsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(getApplicationContext(), ReportScreen.class);
+                    startActivity(i);
+
+                }
+            });
 
             searchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -139,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 Music object = dBMusic.get(i);
                 music.add(object);
                 object.setIndex();
+                object.setAdded();
             }
             counterMusic++;
         }
@@ -148,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
                 Movie object = dBMovies.get(i);
                 movies.add(object);
                 object.setIndex();
+                object.setAdded();
             }
             counterMovies++;
         }
@@ -157,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 TVShow object = dBTVShows.get(i);
                 tvShows.add(object);
                 object.setIndex();
+                object.setAdded();
             }
             counterTVShows++;
         }
@@ -166,6 +181,8 @@ public class MainActivity extends AppCompatActivity {
                 Track object = dBTracks.get(i);
                 tracks.add(object);
                 object.setIndex();
+                object.setAdded();
+                object.setMusic(databaseMan.getMusic(object.getMusic_id()));
             }
             counterTracks++;
         }
@@ -175,6 +192,9 @@ public class MainActivity extends AppCompatActivity {
                 Actor object = dBActors.get(i);
                 actors.add(object);
                 object.setIndex();
+                object.setAdded();
+                object.setMovie(databaseMan.getMovie(object.getMedia_id()));
+                object.setTvShow(databaseMan.getTVShow(object.getMedia_id()));
             }
             counterActors++;
         }
@@ -184,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
                 Season object = dBSeasons.get(i);
                 seasons.add(object);
                 object.setIndex();
+                object.setAdded();
+                object.setTvShow(databaseMan.getTVShow(object.getTv_id()));
             }
             counterSeasons++;
         }

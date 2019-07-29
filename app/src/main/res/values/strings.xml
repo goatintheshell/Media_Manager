@@ -64,4 +64,16 @@
     <string name="return_to_home">Return To Home</string>
     <string name="track">Track</string>
     <string name="season">Season</string>
+    <string name="view_reports">View Reports</string>
+    <string name="enter_search_text_here">Enter Search Text Here</string>
+    <string-array name="media_array">
+        <item>Select Media Type</item>
+        <item>Music</item>
+        <item>Movies</item>
+        <item>TV Shows</item>
+        <item>Tracks</item>
+        <item>Actors</item>
+        <item>Seasons</item>
+    </string-array>
 </resources>
+

@@ -118,7 +118,10 @@ public class AddMovieScreen extends AppCompatActivity {
         int sequenceId = databaseMan.getLastSequence();
         databaseMan.addMovie(movie, getNumActors(), sequenceId);
         Movie movie1 = databaseMan.getLastMovie();
+        databaseMan.addDateMovie(movie1.get_id());
         MainActivity.movies.add(movie1);
+        movie1.setAdded();
+        movie1.setIndex();
     }
 
     public Bitmap getCover(int type) {
@@ -157,6 +160,9 @@ public class AddMovieScreen extends AppCompatActivity {
                     databaseMan.addActor(actorName, _id);
                     Actor actor = databaseMan.getLastActor();
                     MainActivity.actors.add(actor);
+                    actor.setIndex();
+                    actor.setAdded();
+                    actor.setMovie(databaseMan.getLastMovie());
                 }
         }
     }
